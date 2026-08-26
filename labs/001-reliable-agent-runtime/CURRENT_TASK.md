@@ -1,161 +1,211 @@
-# Current Task — 001A-1: Define the Tool Execution Contract
+# Current Task — 001A: Agent Eval Baseline
 
-当前只做这一小步。不要提前实现 retry、idempotency、数据库、真实 LLM 或 Agent framework。
+> Mode: guided reference implementation
+>
+> 当前不是从零写 Agent，而是 **读懂 → 运行 → 看 trace → 判断 failure**。
 
-## 目标
+## Why
 
-建立一个最小的 Tool Execution Boundary，让系统能够明确表达：
+你已经会 RAG、LangChain、LangGraph 和基础 Agent 开发。
+
+现在第一优先级不是再学一个 framework，而是建立一个大厂 Agent Engineer 非常核心的习惯：
+
+> **先定义怎么测，再讨论怎么改。**
+
+Agent 输出“看起来不错”不是工程证据。生产环境需要知道：
+
+- task 到底成功没有；
+- 哪一步失败；
+- 是 model、tool、context 还是 harness；
+- 修改以后 solve rate 是否真的提高；
+- 提高的同时 latency / cost 是否恶化。
+
+本课只建立第一层 eval mental model。
+
+---
+
+# Reference Code
+
+本轮直接使用 Teacher 提供的带注释代码：
 
 ```text
-谁在执行？
-执行哪个 tool？
-输入是什么？
-这个 tool 有什么风险属性？
-执行结果是什么？
-失败属于哪一类？
+guided_reference/001a/
+├── agent_runtime/
+│   └── __init__.py
+├── baseline_agent.py
+└── run_eval.py
 ```
 
-这一步的重点不是代码量，而是把 Agent Runtime 的核心数据契约设计正确。
+重点文件：
 
-## 你需要自己实现
+1. `baseline_agent.py`
+   - contracts
+   - mock tools
+   - deterministic fake model
+   - minimal agent harness
+   - trace events
 
-建议目录：
+2. `run_eval.py`
+   - eval cases
+   - deterministic grader
+   - trace inspection
+   - baseline pass rate
+
+第一遍允许照着代码重新打一遍，也可以直接运行仓库版本。
+
+---
+
+# Mental Model
+
+先只记住这条链：
 
 ```text
-labs/001-reliable-agent-runtime/
-├── CURRENT_TASK.md
-├── README.md
-└── src/
-    └── ...
+User Task
+   ↓
+Model Decision
+   ↓
+Harness
+   ↓
+Tool Registry
+   ↓
+Validation
+   ↓
+Tool Execution
+   ↓
+Tool Result
+   ↓
+Model Final Answer
 ```
 
-文件如何拆分由你决定。
+旁边还有一条非常重要的链：
 
-至少需要表达这些概念：
+```text
+每一步
+  ↓
+Trace Event
+  ↓
+Evaluator
+  ↓
+Pass / Fail + Failure Reason
+```
 
-- `Run`
+没有第二条链，你通常只能“看输出猜 Agent 好不好”。
+
+---
+
+# Step 1 — Run It
+
+进入：
+
+```text
+labs/001-reliable-agent-runtime/guided_reference/001a
+```
+
+运行：
+
+```bash
+python run_eval.py
+```
+
+当前 baseline 预期：
+
+```text
+4 / 6 PASS
+2 / 6 FAIL
+```
+
+如果不是这个结果，先不要继续改代码，回来告诉 Teacher 实际输出。
+
+---
+
+# Step 2 — 找出两个真正失败的 case
+
+不要先看“怎么修”。
+
+先根据输出和 trace 判断：
+
+1. 哪两个 case 没通过？
+2. 每个 case 在 execution path 的哪一层开始偏离预期？
+3. runtime status 是否一定等于 task success？
+
+特别观察：
+
+```text
+read_unseen_ticket_id
+```
+
+这里会出现一个很重要的现象：
+
+> runtime 可以 SUCCESS，但任务本身仍然 FAIL。
+
+这是 Agent eval 和普通 API health check 很大的区别。
+
+---
+
+# Step 3 — 读懂这 6 个对象/边界
+
+暂时不用背代码，只需要能够用自己的话解释：
+
+- `ModelDecision`
 - `ToolSpec`
-- `ToolCall`
-- `ToolResult`
-- `ToolRisk`
-- `ExecutionStatus`
+- `TraceEvent`
+- `RunResult`
+- `TOOL_REGISTRY`
+- `AgentRunner.run()`
 
-可以使用 `dataclass`、`Enum`、普通 class 等 Python 标准能力，自行选择。
+重点不是 Python 语法，而是：
 
-## 第一版只支持两个 mock tools
+> 每一个对象在 Agent execution lifecycle 中负责表达什么事实？
 
-### `get_ticket`
+---
 
-输入：
+# Step 4 — 回来和 Teacher 对话
 
-```json
-{"ticket_id":"T-1001"}
-```
+完成运行后，不需要马上自己改。
 
-属性：
+直接告诉 ChatGPT：
 
-- read-only
-- low risk
-- 暂时不做 retry
-- 不需要 approval
+> **001A 跑完了，结果是 X/6，开始给我讲。**
 
-### `close_ticket`
+最好把你认为失败的两个 case 名字一起说出来。
 
-输入：
+Teacher 下一步会：
 
-```json
-{"ticket_id":"T-1001","reason":"resolved"}
-```
+1. 按真实执行顺序逐段讲 `baseline_agent.py`；
+2. 讲 runtime success vs task success；
+3. 讲 deterministic evaluator 为什么比一上来 LLM-as-judge 更重要；
+4. 让你自己修改一个 failure taxonomy；
+5. 再做第一次 before/after eval。
 
-属性：
+---
 
-- 会产生 side effect
-- higher risk
-- 以后需要 approval / idempotency，但这一小步先只把这些属性表达在 `ToolSpec` 中，不实现机制
+# 当前不要做
 
-## 需要实现的最小执行入口
+为了控制学习边界，本轮先不要：
 
-设计一个类似下面职责的函数，但函数签名由你自己决定：
+- 接真实 LLM；
+- 改成 LangGraph；
+- 加 retry；
+- 加 idempotency；
+- 加数据库；
+- 加 MCP；
+- 引入 observability SaaS；
+- 优化那两个失败 case。
 
-```text
-execute_tool(...)
-```
+先学会**读取一次 Agent execution，并用 eval 证明它哪里失败**。
 
-当前只要求它完成：
+---
 
-1. 根据 `tool_name` 从 registry 找 tool；
-2. unknown tool 明确失败；
-3. 在业务函数执行前完成最小参数校验；
-4. 调用对应 mock tool；
-5. 返回结构化 `ToolResult`；
-6. 不把异常全部吞成一个字符串。
+# Pass Criteria for 001A-Read
 
-## 暂时不要做
+这一小步通过只需要：
 
-- retry
-- timeout
-- approval enforcement
-- idempotency
-- persistence
-- tracing platform
-- async
-- LLM API
-- MCP
-- LangGraph / Agents SDK / CrewAI
+- 能运行 baseline；
+- 得到预期结果；
+- 能找到两个 failing cases；
+- 能从 trace 大概说出 failure 发生在哪里；
+- 能解释为什么 `RunStatus.SUCCESS` 不等于“用户任务成功”。
 
-这些都会在后续逐层加入。
+通过后进入：
 
-## 验收测试
-
-至少自己写测试证明：
-
-### Test 1 — known tool succeeds
-
-```text
-get_ticket(T-1001)
-→ ToolResult.status == success
-→ result 中能拿到 mock ticket
-```
-
-### Test 2 — unknown tool is rejected
-
-```text
-delete_everything
-→ 明确的 unknown-tool failure
-→ 没有任何 business function 被执行
-```
-
-### Test 3 — invalid arguments fail before business execution
-
-```text
-get_ticket(ticket_id="")
-→ validation failure
-→ get_ticket 的实际执行次数仍为 0
-```
-
-### Test 4 — side-effect metadata is visible
-
-程序能够从 `ToolSpec` 判断：
-
-```text
-get_ticket  = read-only / low risk
-close_ticket = side-effect / higher risk
-```
-
-当前不需要阻止 `close_ticket`，只是要证明 runtime 已经知道两者不同。
-
-## 写完后你必须能回答
-
-1. `ToolSpec` 和 `ToolCall` 为什么不能合成一个对象？
-2. 为什么参数校验必须在业务函数执行前？
-3. 为什么 Agent Runtime 需要知道 tool 是否有 side effect？
-4. `ToolResult` 为什么最好包含明确 status，而不是只返回任意 Python 对象？
-5. registry 在 Agent runtime 里解决了什么问题？
-
-## 完成方式
-
-你自己提交代码到仓库后，在 ChatGPT 中说：
-
-> 审查 001A-1
-
-下一步才进入 `001A-2: approval boundary + risk enforcement`。
+**001A-Modify — Failure Taxonomy + Before/After Eval**。
