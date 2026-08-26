@@ -11,11 +11,29 @@
 - `PASSED`：通过代码、测试和解释验证；
 - `REVISIT`：以前会，但需要重新验证。
 
+## Current Subtask
+
+**Lab 001A-1 — Define the Tool Execution Contract**
+
+入口：[`labs/001-reliable-agent-runtime/CURRENT_TASK.md`](./labs/001-reliable-agent-runtime/CURRENT_TASK.md)
+
+当前只做：
+
+```text
+Run / ToolSpec / ToolCall / ToolResult
+ToolRisk / ExecutionStatus
+registry
+minimal validation
+structured execution result
+```
+
+当前故意不做 retry、approval enforcement、idempotency、LLM、MCP 和 Agent framework。
+
 ## Current Focus
 
 | Area | Status | Evidence |
 |---|---|---|
-| Reliable Agent Runtime | LEARNING | Lab 001 |
+| Reliable Agent Runtime | LEARNING | Lab 001A-1 |
 | Context / Memory Engineering | TODO | — |
 | MCP 2026 | TODO | — |
 | A2A 1.0 | TODO | — |
