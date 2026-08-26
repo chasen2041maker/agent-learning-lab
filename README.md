@@ -1,148 +1,138 @@
 # Agent Learning Lab
 
-一个面向 **Agent / AI 工程师长期成长** 的实战学习仓库。
+一个面向 **Production Agent / Applied AI / Agent Systems Engineer** 长期成长的实战学习仓库。
 
-这个仓库不是“AI 笔记大全”，也不是从零开始照章节学框架。目标是把日常工作、ChatGPT 对话学习、前沿技术跟踪和工程实验沉淀成一套可验证、可复用、持续演进的个人 Agent Engineering 知识与代码体系。
+这个仓库不是“AI 笔记大全”，也不是从零开始按框架章节学习。目标是把日常工作、ChatGPT 对话学习、前沿技术跟踪和工程实验沉淀成一套可验证、可迁移、持续演进的个人 Agent Engineering 能力体系。
 
-## 学习定位
+## 当前定位
 
-主线分为两条，但不是 50/50 平分：
+已具备/接触：Python、RAG、LangChain、LangGraph、Agent/workflow、tool calling，并有实际 Agent 项目经验。
 
-1. **Agent / AI Engineering（主线）**
-   - Agent runtime / tool loop
-   - Tool calling / structured output
-   - Context engineering / memory
-   - RAG / retrieval / reranking
-   - MCP / A2A / agent interoperability
-   - Durable execution / long-running agents
-   - Human-in-the-loop / approvals
-   - Evals / tracing / observability
-   - Sandbox / security / authorization
-   - Multi-agent / delegation
-   - Model routing / cost / latency / reliability
-   - Computer-use / coding agents / autonomous workflows
-
-2. **Backend Engineering（支撑线）**
-   - HTTP / API / RPC
-   - concurrency / async
-   - database / transaction
-   - Redis / cache
-   - queue / event
-   - timeout / retry / idempotency
-   - auth / permission
-   - Docker / Kubernetes
-   - logging / metrics / tracing
-   - distributed systems fundamentals
-
-后端知识不会脱离 Agent 单独背概念。优先在真实 Agent 工程问题里补齐：例如学 durable agent 时理解 checkpoint、事务和消息队列；学 tool execution 时理解 timeout、retry、idempotency；学 MCP/A2A 时理解 HTTP、RPC、OAuth 和服务治理。
-
-## 长期工程原则
-
-职业目标不是停留在“会调用模型 API / 会使用某个 Agent 框架”，而是逐步具备 **Production Agent Engineer / Applied AI Engineer / Agent Runtime or Platform Engineer** 的能力。
-
-框架和职位名称会变，但 runtime、context、state、tool execution、durability、eval、observability、security 和 backend reliability 等问题会长期存在。
-
-详细原则见：[`ENGINEERING_PRINCIPLES.md`](./ENGINEERING_PRINCIPLES.md)。
-
-## 学习原则
-
-### 1. 不从纯小白路线重新开始
-
-已经知道的内容快速验证后跳过；知识缺口在实际工程问题中补。学习速度由“能否解释 + 能否实现 + 能否排错”决定，而不是由看完多少教程决定。
-
-### 2. 不追框架 API，先掌握运行机制
-
-可以学习 OpenAI Agents SDK、LangGraph、Vercel AI SDK、MCP SDK 等，但必须能回答：
-
-- framework 帮我隐藏了什么？
-- state 存在哪里？
-- tool call 失败后发生什么？
-- 一个 side effect 被重试会怎样？
-- Agent 为什么能暂停和恢复？
-- trace 如何把一次执行串起来？
-- 模型输出正确，但业务为什么仍然可能失败？
-
-### 3. 新技术必须经过“前沿雷达”筛选
-
-不是 GitHub Trending 出现什么就学什么。优先选择同时满足以下条件的技术：
-
-- 对生产 Agent 系统有实际价值；
-- 正在形成行业标准或被主流生态采用；
-- 能提升工程能力，而不是只增加一个框架名字；
-- 可以通过实验验证。
-
-见 [`FRONTIER_RADAR.md`](./FRONTIER_RADAR.md)。
-
-### 4. 每个核心主题尽量落到实验
-
-仓库里长期保留的是：
-
-- mental model；
-- architecture / data flow；
-- failure modes；
-- 关键代码；
-- tests；
-- benchmark / eval；
-- debugging 记录；
-- 最终工程结论。
-
-临时聊天、重复解释和未经验证的结论不进入仓库。
-
-## 仓库工作流
-
-日常学习流程：
+因此这些内容默认不从零重学。主线直接进入大厂 Agent Engineer 更看重的能力：
 
 ```text
-工作中遇到问题 / 想学新技术
+Evals + Failure Analysis
         ↓
-ChatGPT 解释、追问、设计实验
+Reliable Agent Harness / Runtime
         ↓
-自己先写关键代码 / 做判断
+Backend & Distributed Systems
         ↓
-代码审查、测试、失败分析
+Context / Memory Engineering
         ↓
-形成稳定结论
+Durable Long-Running Agents
         ↓
-ChatGPT 更新本仓库
+Security / Sandbox / Identity
         ↓
-PROGRESS / ROADMAP 同步推进
+MCP / A2A Interoperability
+        ↓
+Observability / Performance / Cost
+        ↓
+Agent Platform / Infrastructure
 ```
 
-## 当前结构
+Advanced Retrieval、Multi-Agent、Model Routing 根据工作和实验需要穿插。
+
+## 最重要的文件
+
+- [`MASTER_GROWTH_PLAN.md`](./MASTER_GROWTH_PLAN.md)：完整成长路线、阶段实验和晋级标准；
+- [`MENTORING_SYSTEM.md`](./MENTORING_SYSTEM.md)：ChatGPT 如何教学、布置任务、审查和维护进度；
+- [`ROLE_TARGET.md`](./ROLE_TARGET.md)：当前大厂 Agent Engineering 目标能力；
+- [`ENGINEERING_PRINCIPLES.md`](./ENGINEERING_PRINCIPLES.md)：长期不轻易变化的工程原则；
+- [`FRONTIER_RADAR.md`](./FRONTIER_RADAR.md)：2026+ 前沿技术雷达；
+- [`PROGRESS.md`](./PROGRESS.md)：当前能力状态和已通过证据；
+- [`ROADMAP.md`](./ROADMAP.md)：能力地图摘要。
+
+## 两条学习线
+
+### Agent / AI Engineering — 主线
+
+- agent harness / runtime
+- evals / experiments / failure analysis
+- tool execution
+- context / memory
+- advanced retrieval
+- durable execution
+- MCP / A2A
+- security / sandbox
+- observability
+- model routing / cost / latency
+- multi-agent / delegation
+- agent platform
+
+### Backend Engineering — 支撑线
+
+后端不与 Agent 脱离学习，而是在真实 Agent 系统问题里补：
+
+- HTTP / API / RPC
+- concurrency / async
+- SQL / transaction
+- Redis / cache
+- queue / event
+- timeout / retry / idempotency
+- auth / permission
+- Docker / Kubernetes
+- logging / metrics / tracing
+- distributed systems
+
+例如：
 
 ```text
-agent-learning-lab/
-├── README.md
-├── ENGINEERING_PRINCIPLES.md
-├── ROADMAP.md
-├── PROGRESS.md
-├── FRONTIER_RADAR.md
-└── labs/
-    └── 001-reliable-agent-runtime/
-        ├── README.md
-        └── CURRENT_TASK.md
+Tool retry        → idempotency / transaction
+Long-running run  → queue / lease / heartbeat
+Agent memory      → DB / cache consistency
+MCP / A2A         → HTTP / RPC / OAuth
+Sandbox           → process / container isolation
+Agent platform    → distributed systems / Kubernetes
 ```
 
-结构会随着学习真实增长，不预先创建几十个空目录。
+## 学习方式
 
-## 当前起点
+不默认要求从空白文件手写所有代码。
 
-第一个实验不是聊天机器人，而是：
+默认采用：
 
-**Lab 001 — Reliable Agent Runtime**
+```text
+Teacher 给高质量带注释 reference implementation
+        ↓
+逐段讲解 execution path / mental model
+        ↓
+自己运行
+        ↓
+修改关键行为
+        ↓
+fault injection / debugging
+        ↓
+增加 tests / eval
+        ↓
+回答设计问题
+        ↓
+Teacher 直接审 GitHub
+        ↓
+更新 PROGRESS
+        ↓
+解锁下一任务
+```
 
-目标是自己建立一个最小但工程语义正确的 Agent 执行循环，逐步加入：tool boundary、side effect、approval、idempotency、timeout、retry、step budget 和 trace。
+关键状态机、retry/idempotency、context policy、eval、authorization、concurrency 和 crash recovery 等核心逻辑仍会要求自己实现或重写。
 
-Lab 总说明：[`labs/001-reliable-agent-runtime/README.md`](./labs/001-reliable-agent-runtime/README.md)
+详见 [`LEARNING_METHOD.md`](./LEARNING_METHOD.md) 和 [`MENTORING_SYSTEM.md`](./MENTORING_SYSTEM.md)。
 
-**当前唯一任务：** [`001A-1 — Define the Tool Execution Contract`](./labs/001-reliable-agent-runtime/CURRENT_TASK.md)
+## 当前任务
 
-不要提前做后面的 retry、approval、idempotency、LLM 或 MCP。先把执行契约做对。
+当前阶段从 **Agent Evals & Failure Analysis** 开始，而不是重新学习 RAG/LangChain/LangGraph。
+
+入口：[`labs/001-reliable-agent-runtime/CURRENT_TASK.md`](./labs/001-reliable-agent-runtime/CURRENT_TASK.md)
+
+完成代码/实验后，只需要在 ChatGPT 中说：
+
+> 审查当前任务
+
+ChatGPT 会直接读取仓库最新实现，给出结论并维护 `PROGRESS.md`。
 
 ## 长期目标
 
-最终能够独立回答并实现下面这类问题：
+最终能够独立设计和解释一个生产 Agent 系统：
 
-> 如何设计一个可以运行数分钟到数小时、会调用多个外部系统、允许人工审批、宕机后可恢复、不会重复执行危险操作、可观测、可评估、可控成本，并能通过 MCP/A2A 与外部能力协作的生产级 Agent？
+> 它能执行长任务、调用外部系统、处理副作用、允许人工审批、宕机恢复、隔离不可信执行、控制权限与成本，并且可以通过 trace/eval 数据持续证明系统在变好。
 
-当这个问题不再只是“会用某个 Agent 框架”，而是能够从 runtime、backend、protocol、security、eval 和 infra 层完整设计时，这个仓库才真正达到目标。
+真正的目标不是“会某个 Agent 框架”，而是具备即使模型、框架和协议继续快速变化，也能迁移的 Agent Systems Engineering 能力。
