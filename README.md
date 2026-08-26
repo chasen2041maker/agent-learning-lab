@@ -36,6 +36,14 @@
 
 后端知识不会脱离 Agent 单独背概念。优先在真实 Agent 工程问题里补齐：例如学 durable agent 时理解 checkpoint、事务和消息队列；学 tool execution 时理解 timeout、retry、idempotency；学 MCP/A2A 时理解 HTTP、RPC、OAuth 和服务治理。
 
+## 长期工程原则
+
+职业目标不是停留在“会调用模型 API / 会使用某个 Agent 框架”，而是逐步具备 **Production Agent Engineer / Applied AI Engineer / Agent Runtime or Platform Engineer** 的能力。
+
+框架和职位名称会变，但 runtime、context、state、tool execution、durability、eval、observability、security 和 backend reliability 等问题会长期存在。
+
+详细原则见：[`ENGINEERING_PRINCIPLES.md`](./ENGINEERING_PRINCIPLES.md)。
+
 ## 学习原则
 
 ### 1. 不从纯小白路线重新开始
@@ -105,12 +113,14 @@ PROGRESS / ROADMAP 同步推进
 ```text
 agent-learning-lab/
 ├── README.md
+├── ENGINEERING_PRINCIPLES.md
 ├── ROADMAP.md
 ├── PROGRESS.md
 ├── FRONTIER_RADAR.md
 └── labs/
     └── 001-reliable-agent-runtime/
-        └── README.md
+        ├── README.md
+        └── CURRENT_TASK.md
 ```
 
 结构会随着学习真实增长，不预先创建几十个空目录。
@@ -123,7 +133,11 @@ agent-learning-lab/
 
 目标是自己建立一个最小但工程语义正确的 Agent 执行循环，逐步加入：tool boundary、side effect、approval、idempotency、timeout、retry、step budget 和 trace。
 
-入口：[`labs/001-reliable-agent-runtime/README.md`](./labs/001-reliable-agent-runtime/README.md)
+Lab 总说明：[`labs/001-reliable-agent-runtime/README.md`](./labs/001-reliable-agent-runtime/README.md)
+
+**当前唯一任务：** [`001A-1 — Define the Tool Execution Contract`](./labs/001-reliable-agent-runtime/CURRENT_TASK.md)
+
+不要提前做后面的 retry、approval、idempotency、LLM 或 MCP。先把执行契约做对。
 
 ## 长期目标
 
