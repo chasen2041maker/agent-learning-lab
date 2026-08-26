@@ -6,7 +6,7 @@
 第一版 evaluator 故意非常朴素：
 - 检查 run status；
 - 检查 error_type；
-- 检查期望的 tool 是否真的被调用。
+- 检查期望的 tool 是否真正进入 execution boundary。
 
 这正是本课要理解的重点：eval 不一定一上来就需要 LLM-as-judge。
 能 deterministic 判断的东西，优先 deterministic 判断。
@@ -75,17 +75,21 @@ CASES = [
 ]
 
 
-def called_tools(result: RunResult) -> list[str]:
-    """从 trace 里提取真正进入 tool execution 后成功执行的工具。
+def attempted_tools(result: RunResult) -> list[str]:
+    """从 trace 提取真正进入 tool handler execution boundary 的工具。
 
-    注意这里故意只看 tool_succeeded。
-    后面你会思考：一个 tool 被 attempted 但失败时，是否也应该算“called”？
-    指标定义本身就是工程决策。
+    `tool_succeeded` 和 `tool_failed` 都算 attempted，因为 backend 抛错并不代表
+    Agent 没有正确选择/调用这个 tool。
+
+    `tool_rejected` 不算 attempted：unknown tool 或 validation error 在真正业务函数
+    执行前就被 runtime 拦住了。
+
+    这看似只是命名，实际上体现了 eval metric 必须有精确定义。
     """
 
     tools: list[str] = []
     for event in result.trace:
-        if event.event == "tool_succeeded":
+        if event.event in {"tool_succeeded", "tool_failed"}:
             name = event.details.get("tool_name")
             if isinstance(name, str):
                 tools.append(name)
@@ -103,14 +107,14 @@ def grade(case: EvalCase, result: RunResult) -> tuple[bool, list[str]]:
         )
 
     if case.expected_error_type != result.error_type:
-        # expected_error_type=None 时也会校验，避免“表面 success 但偷偷带 error”。
+        # expected_error_type=None 时也校验，避免“表面 success 但偷偷带 error”。
         reasons.append(
             f"error_type expected={case.expected_error_type} actual={result.error_type}"
         )
 
-    if case.expected_tool is not None and case.expected_tool not in called_tools(result):
+    if case.expected_tool is not None and case.expected_tool not in attempted_tools(result):
         reasons.append(
-            f"expected tool {case.expected_tool!r} was not successfully executed"
+            f"expected tool {case.expected_tool!r} never entered execution boundary"
         )
 
     return not reasons, reasons
@@ -139,11 +143,11 @@ def main() -> None:
         ok, reasons = grade(case, result)
         passed += int(ok)
 
-        print(f"\n[{ 'PASS' if ok else 'FAIL' }] {case.name}")
+        print(f"\n[{'PASS' if ok else 'FAIL'}] {case.name}")
         print(f"  run_id: {result.run_id}")
         print(f"  runtime status: {result.status.value}")
         print(f"  error_type: {result.error_type}")
-        print(f"  called_tools: {called_tools(result)}")
+        print(f"  attempted_tools: {attempted_tools(result)}")
 
         for reason in reasons:
             print(f"  grader: {reason}")
